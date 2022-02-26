@@ -15,6 +15,8 @@ client.on('interactionCreate', async interaction => {
 
 	const { commandName } = interaction;
 
+	console.log("Command /" + commandName + " from " + interaction.user.username);
+
 	if (commandName === 'ping') {
 		await interaction.reply('Pong!');
 	} else if (commandName === 'server') {
