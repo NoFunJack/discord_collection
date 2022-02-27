@@ -4,7 +4,7 @@
   "description": "mtg collection discord bot",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "author": "",
   "license": "ISC",
@@ -12,6 +12,11 @@
     "@discordjs/builders": "^0.12.0",
     "@discordjs/rest": "^0.3.0",
     "discord-api-types": "^0.27.3",
-    "discord.js": "^13.6.0"
+    "discord.js": "^13.6.0",
+    "fs-extra": "^10.0.1",
+    "lokijs": "^1.5.12"
+  },
+  "devDependencies": {
+    "should": "^13.2.3"
   }
 }
