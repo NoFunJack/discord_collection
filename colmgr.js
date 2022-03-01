@@ -1,31 +1,24 @@
 var loki = require('lokijs')
 const fs = require('fs-extra')
 
-function ColMgr(db_file){
-
-  fs.ensureFile(db_file, err => {
+exports.init_db = async function(db_file){
+  re = {}
+  fs.ensureFileSync(db_file, err => {
     if(err){
       console.log(err)
     }
   });
+  re.db = new loki(db_file);
+  await load_db_promise(re.db);
 
-  this.db = new loki(db_file);
-  this.db.loadDatabase({}, function(err) {
-  if (err) {
-    console.log("db loading error : " + err);
-  }
-  else {
-    console.log("database loaded.");
-  }
-  });
 
-  this.cards = init_collection(this.db,'cards');
+  re.cards = init_collection(re.db,'cards');
 
-  this.get_cards = function(user){
+  re.get_cards = function(user){
     return this.cards.find({owner: user});
   }
 
-  this.add_cards = function(user,cards){
+  re.add_cards = function(user,cards){
     for (c of cards){
       this.cards.insert({
         owner: user,
@@ -35,27 +28,47 @@ function ColMgr(db_file){
     this.db.saveDatabase();
   }
 
-  this.delete = function() {
-    this.db.deleteDatabase(function(err){
-      if(err){
-        console.error(err);
-      } else {
-        console.log("deleted database");
-      }
-    })
+  re.delete = function() {
+    return new Promise((resolve, reject) =>{
+
+      this.db.deleteDatabase(function(err){
+        if(err){
+          console.error(err);
+          reject();
+        } else {
+          console.log("deleted database");
+          resolve();
+        }
+      })
+    });
   }
 
   function init_collection(db,col_name){
-    console.log(db.listCollections());
     let re = db.getCollection(col_name);
-    console.log(re)
     if(!re){
       console.log("INIT " + col_name )
       re = db.addCollection(col_name);
     }
     return re;
   }
+
+  return re;
+}
+
+function load_db_promise(db) {
+  return new Promise(resolve => {
+    db.loadDatabase({}, function(err) {
+      if (err) {
+        console.error("db loading error : " + err);
+      }
+      else {
+        console.log("database loaded")
+        resolve();
+      }
+    });
+
+  });
 }
 
 
-exports.ColMgr = ColMgr;
+
