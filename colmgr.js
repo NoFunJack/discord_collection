@@ -13,8 +13,9 @@ exports.init_db = async function(db_file){
 
 
   re.cards = init_collection(re.db,'cards');
+  re.users = init_collection(re.db,'users');
 
-  re.get_cards = function(user){
+  re.getCards = function(user){
     return this.cards.find({owner: user});
   }
 
@@ -29,18 +30,51 @@ exports.init_db = async function(db_file){
   }
 
   re.delete = function() {
-    return new Promise((resolve, reject) =>{
+    return new Promise((resolve) =>{
 
       this.db.deleteDatabase(function(err){
         if(err){
           console.error(err);
-          reject();
+          throw new Error(err);
         } else {
           console.log("deleted database");
           resolve();
         }
       })
     });
+  }
+
+  re.createUserProfile = function(userId){
+    re.users.insert({
+      userId: userId,
+      boosterPoints: 10
+    });
+
+    addStartingCollection(re,userId);
+  }
+
+  re.getUserProfile = function(userId){
+    dbUser =  re.users.findOne({userId: userId})
+
+    if(!dbUser){
+      throw new Error("User not found")
+  }
+
+    return {
+      userId: dbUser.userId,
+      boosterPoints: dbUser.boosterPoints,
+    }
+  }
+
+  function addStartingCollection(re,userId){
+    let numLands = 50;
+    let baseLands = ["Plains", "Island", "Swamp", "Mountain", "Forest"];
+
+    cards = []
+    for (l of baseLands){
+      cards = cards.concat(Array(numLands).fill(l));
+    }
+    re.add_cards(userId,cards);
   }
 
   function init_collection(db,col_name){
