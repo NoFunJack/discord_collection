@@ -8,7 +8,7 @@ exports.init_db = async function(db_file){
       console.log(err)
     }
   });
-  re.db = new loki(db_file);
+  re.db = new loki(db_file,{verbose: true});
   await load_db_promise(re.db);
 
 

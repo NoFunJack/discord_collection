@@ -1,15 +1,26 @@
 var should = require('should');
+var fs = require('fs');
+var path = require('path')
 
 var {init_db} = require('./../colmgr')
 
 describe('Collection Manager', function () {
   var db;
+  let filename = path.join(__dirname, "unit_test.db");
   beforeEach(async function() {
-    db = await init_db('unit_test'+ Math.random().toString(36).slice(2)+'.db');
+    db = await init_db(filename);
   });
 
   afterEach(async function() {
-    await db.delete();
+    return await db.delete();
+  });
+
+  before(function() {
+    let p = path.resolve(filename);
+    if (fs.existsSync(filename)) {
+      fs.rmSync(filename);
+      console.log("removed "+ filename);
+    }
   });
 
   it('add single card', function() {
