@@ -2,12 +2,16 @@
 const { Client, Intents } = require('discord.js');
 const { token } = require('./config.json');
 
+const colpkg = require('./colmgr.js');
+
 // Create a new client instance
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 
+let col;
 // When the client is ready, run this code (only once)
-client.once('ready', () => {
-	console.log('Ready!');
+client.once('ready', async () => {
+	col = await colpkg.init_db(Intents.FLAGS.GUILDS + '.db');
+    console.log('Ready!');
 });
 
 client.on('interactionCreate', async interaction => {
@@ -17,14 +21,37 @@ client.on('interactionCreate', async interaction => {
 
 	console.log("Command /" + commandName + " from " + interaction.user.username);
 
-	if (commandName === 'ping') {
-		await interaction.reply('Pong!');
+	if (commandName === 'myprofile') {
+        let user;
+        try{
+            user = col.getUserProfile(interaction.user.id);
+        } catch(err){
+            try {
+                col.createUserProfile(interaction.user.id);
+                user = col.getUserProfile(interaction.user.id);
+            } catch(err){
+                console.error(err);
+            }
+        }
+
+        console.log(user);
+
+		await interaction.reply("you have "+ user.boosterPoints + " Boosterpoints!");
 	} else if (commandName === 'server') {
 		await interaction.reply('Server info.');
 	} else if (commandName === 'user') {
+        console.log(interaction);
 		await interaction.reply('User info.');
 	}
 });
 
 // Login to Discord with your client's token
 client.login(token);
+
+
+process.on('SIGINT', () => {
+  console.info('SIGTERM signal received.');
+  client.destroy();
+  console.info("bot logged out");
+  process.exit(0);
+});
