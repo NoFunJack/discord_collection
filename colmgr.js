@@ -66,6 +66,27 @@ exports.init_db = async function(db_file){
     }
   }
 
+  re.getCardsTxt = function(userId){
+    let accOb =  re.getCards(userId)
+             .map(entry => entry.card)
+             .sort()
+             .reduce((sum,next)=> {
+               if (next in sum){
+                 sum[next] += 1;
+               } else {
+                 sum[next] = 1;
+               }
+               return sum;
+             }
+            , {});
+
+      lines = [];
+      for(line in accOb){
+        lines.push(`${accOb[line]} ${line}`)
+      }
+      return lines.join("\n")
+  }
+
   function addStartingCollection(re,userId){
     let numLands = 50;
     let baseLands = ["Plains", "Island", "Swamp", "Mountain", "Forest"];

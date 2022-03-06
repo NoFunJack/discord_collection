@@ -62,4 +62,11 @@ describe('Collection Manager', function () {
     startCol.should.not.be.empty();
   });
 
+  it('creates user readable list of collection', function() {
+    db.add_cards("user123", ["foo","bar","bernd","foo"]);
+    db.getCardsTxt("user123").should.be.equal(
+      "1 bar\n1 bernd\n2 foo"
+    );
+  });
+
 });

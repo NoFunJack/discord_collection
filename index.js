@@ -1,6 +1,6 @@
 // Require the necessary discord.js classes
 const { Client, Intents } = require('discord.js');
-const { token } = require('./config.json');
+const { token,guildId} = require('./config.json');
 
 const colpkg = require('./colmgr.js');
 
@@ -10,7 +10,7 @@ const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 let col;
 // When the client is ready, run this code (only once)
 client.once('ready', async () => {
-	col = await colpkg.init_db(Intents.FLAGS.GUILDS + '.db');
+	col = await colpkg.init_db(guildId + '.db');
     console.log('Ready!');
 });
 
@@ -37,8 +37,10 @@ client.on('interactionCreate', async interaction => {
         console.log(user);
 
 		await interaction.reply("you have "+ user.boosterPoints + " Boosterpoints!");
-	} else if (commandName === 'server') {
-		await interaction.reply('Server info.');
+	} else if (commandName === 'collection') {
+        let list = col.getCardsTxt(interaction.user.id);
+        list ||= "none found";
+		await interaction.reply(list);
 	} else if (commandName === 'user') {
         console.log(interaction);
 		await interaction.reply('User info.');
