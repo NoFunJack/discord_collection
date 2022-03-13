@@ -34,7 +34,7 @@ client.on('interactionCreate', async interaction => {
             }
         }
 
-        console.log(user);
+        console.log("created User\n\n" + user);
 
 		await interaction.reply("you have "+ user.boosterPoints + " Boosterpoints!");
 	} else if (commandName === 'collection') {
