@@ -1,8 +1,9 @@
 // Require the necessary discord.js classes
-const { Client, Intents } = require('discord.js');
+const { Client, Intents, MessageActionRow, MessageSelectMenu } = require('discord.js');
 const { token,guildId} = require('./config.json');
 
 const colpkg = require('./colmgr.js');
+const { getSetBooster, setExists} = require('./boosterBuilder.js');
 
 // Create a new client instance
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
@@ -37,13 +38,30 @@ client.on('interactionCreate', async interaction => {
         console.log("created User\n\n" + user);
 
 		await interaction.reply("you have "+ user.boosterPoints + " Boosterpoints!");
-	} else if (commandName === 'collection') {
+	} else if (commandName === 'try_booster') {
+        await buildSetSelector(interaction,'try_booster');
+    } else if (commandName === 'collection') {
         let list = col.getCardsTxt(interaction.user.id);
         list ||= "none found";
 		await interaction.reply(list);
 	} else if (commandName === 'user') {
         console.log(interaction);
 		await interaction.reply('User info.');
+	}
+});
+
+client.on('interactionCreate', async interaction => {
+	if (!interaction.isSelectMenu()) return;
+    if (interaction.customId === 'try_booster') {
+        let setId = interaction.values[0];
+        let content = "ERROR"
+        if (setExists(setId)) {
+            content = "Simulate Booster\n\n"
+                + getSetBooster(setId).map(c =>c.name).join("\n");
+        } else {
+            content = 'set \"'+ setId + '\" not found';
+        }
+		await interaction.update({ content: content, components: [] });
 	}
 });
 
@@ -57,3 +75,29 @@ process.on('SIGINT', () => {
   console.info("bot logged out");
   process.exit(0);
 });
+
+async function buildSetSelector(interaction,id){
+    const row = new MessageActionRow()
+			.addComponents(
+				new MessageSelectMenu()
+					.setCustomId(id)
+					.setPlaceholder('Nothing selected')
+					.addOptions([
+						{
+							label: 'Kamigawa: Neon Dynasty',
+							//description: 'This is a description',
+							value: 'neo',
+						},
+						{
+							label: 'Innistrad: Crimson Vow',
+							value: 'vow',
+						},
+						{
+							label: 'Innistrad: Midnight Hunt',
+							value: 'mid',
+						},
+					]),
+			);
+
+		await interaction.reply({ content: 'Select Set', components: [row] });
+}
