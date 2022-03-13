@@ -40,6 +40,8 @@ client.on('interactionCreate', async interaction => {
 		await interaction.reply("you have "+ user.boosterPoints + " Boosterpoints!");
 	} else if (commandName === 'try_booster') {
         await buildSetSelector(interaction,'try_booster');
+	} else if (commandName === 'open_booster') {
+        await buildSetSelector(interaction,'open_booster');
     } else if (commandName === 'collection') {
         let list = col.getCardsTxt(interaction.user.id);
         list ||= "none found";
@@ -53,6 +55,9 @@ client.on('interactionCreate', async interaction => {
 client.on('interactionCreate', async interaction => {
 	if (!interaction.isSelectMenu()) return;
     if (interaction.customId === 'try_booster') {
+        openBooster(interaction,false);
+	}
+    async function openBooster(interaction, addToCollection ){
         let setId = interaction.values[0];
         let content = "ERROR"
         if (setExists(setId)) {
@@ -62,7 +67,7 @@ client.on('interactionCreate', async interaction => {
             content = 'set \"'+ setId + '\" not found';
         }
 		await interaction.update({ content: content, components: [] });
-	}
+    }
 });
 
 // Login to Discord with your client's token
