@@ -30,12 +30,11 @@ client.on('interactionCreate', async interaction => {
             try {
                 col.createUserProfile(interaction.user.id);
                 user = col.getUserProfile(interaction.user.id);
+                console.log("created new User Profile")
             } catch(err){
                 console.error(err);
             }
         }
-
-        console.log("created User\n\n" + user);
 
 		await interaction.reply("you have "+ user.boosterPoints + " Boosterpoints!");
 	} else if (commandName === 'try_booster') {
@@ -56,13 +55,20 @@ client.on('interactionCreate', async interaction => {
 	if (!interaction.isSelectMenu()) return;
     if (interaction.customId === 'try_booster') {
         openBooster(interaction,false);
-	}
+	} else if (interaction.customId === 'open_booster'){
+        openBooster(interaction, true);
+    }
     async function openBooster(interaction, addToCollection ){
         let setId = interaction.values[0];
         let content = "ERROR"
         if (setExists(setId)) {
-            content = "Simulate Booster\n\n"
-                + getSetBooster(setId).map(c =>c.name).join("\n");
+            let newCards = getSetBooster(setId).map(c =>c.name);
+            if(col.tryAddBoosterCards(interaction.user.id,newCards)){
+                content = "Booster Content\n\n"
+                    + newCards.join("\n");
+            } else {
+                content = "sorry, no more bosterpoints " + interaction.user.username;
+            }
         } else {
             content = 'set \"'+ setId + '\" not found';
         }

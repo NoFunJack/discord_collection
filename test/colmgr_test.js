@@ -5,6 +5,9 @@ var path = require('path')
 var {init_db} = require('./../colmgr')
 
 describe('Collection Manager', function () {
+
+  const STARTING_BOOSTER_POINTS = 15;
+
   var db;
   let filename = path.join(__dirname, "unit_test.db");
   beforeEach(async function() {
@@ -23,11 +26,11 @@ describe('Collection Manager', function () {
     }
   });
 
-  it('add single card', function() {
+  it('add single card', async function() {
 
     db.getCards("user123").should.be.empty();
 
-    db.add_cards("user123", ["Lord of Mock"]);
+    await db.add_cards("user123", ["Lord of Mock"]);
 
     var cards = db.getCards("user123");
     cards.should.be.size(1);
@@ -35,11 +38,11 @@ describe('Collection Manager', function () {
     cards[0].card.should.be.equal("Lord of Mock");
   });
 
-  it('add multiple cards', function() {
+  it('add multiple cards', async function() {
 
     db.getCards("user123").should.be.empty();
 
-    db.add_cards("user123", ["Lord of Mock","Mockering"]);
+    await db.add_cards("user123", ["Lord of Mock","Mockering"]);
 
     var cards = db.getCards("user123");
     cards.should.be.size(2);
@@ -57,16 +60,35 @@ describe('Collection Manager', function () {
     db.createUserProfile("user123");
     let up = db.getUserProfile("user123");
     up.should.not.be.null;
-    up.boosterPoints.should.be.equal(10);
+    up.boosterPoints.should.be.equal(STARTING_BOOSTER_POINTS);
     let startCol = db.getCards(up.userId);
     startCol.should.not.be.empty();
   });
 
-  it('creates user readable list of collection', function() {
-    db.add_cards("user123", ["foo","bar","bernd","foo"]);
+  it('creates user readable list of collection',async function() {
+    await db.add_cards("user123", ["foo","bar","bernd","foo"]);
     db.getCardsTxt("user123").should.be.equal(
       "1 bar\n1 bernd\n2 foo"
     );
   });
 
+  it('add Booster cards',async function () {
+    db.createUserProfile("user123");
+    await db.tryAddBoosterCards("user123",["the one mock"]);
+    db.getCards("user123").map(c => c.card).should.containEql("the one mock");
+    let up = db.getUserProfile("user123");
+    up.boosterPoints.should.be.equal(STARTING_BOOSTER_POINTS - 1);
+  });
+
+  it('add booster cards with no booster points',async function () {
+    db.createUserProfile("user123");
+    for(let i = 1; i < STARTING_BOOSTER_POINTS; i++){
+      // use up all booster points
+      await db.tryAddBoosterCards("user123",["the one mock"]);
+      let up = db.getUserProfile("user123");
+      up.boosterPoints.should.be.equal(STARTING_BOOSTER_POINTS - i);
+    }
+
+    db.tryAddBoosterCards("user123",["the one mock"]).should.finally.throw("no booster points");
+  });
 });

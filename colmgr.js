@@ -19,14 +19,26 @@ exports.init_db = async function(db_file){
     return this.cards.find({owner: user});
   }
 
-  re.add_cards = function(user,cards){
+  re.tryAddBoosterCards = async function(userId,cards){
+    let user = re.users.findOne({userId: userId});
+    if(user.boosterPoints>0){
+      re.add_cards(userId,cards);
+      user.boosterPoints -= 1;
+      re.users.update(user);
+      await saveDb(this.db);
+    } else {
+      throw new Error("no booster points")
+    }
+  }
+
+  re.add_cards = async function(user,cards){
     for (c of cards){
       this.cards.insert({
         owner: user,
         card: c
       })
     }
-    this.db.saveDatabase();
+    await saveDb(this.db);
   }
 
   re.delete = function() {
@@ -47,7 +59,7 @@ exports.init_db = async function(db_file){
   re.createUserProfile = function(userId){
     re.users.insert({
       userId: userId,
-      boosterPoints: 10
+      boosterPoints: 15
     });
 
     addStartingCollection(re,userId);
@@ -87,7 +99,19 @@ exports.init_db = async function(db_file){
       return lines.join("\n")
   }
 
-  function addStartingCollection(re,userId){
+  function saveDb(db){
+    return new Promise((resolve,reject)=>
+      db.saveDatabase(function(err){
+        if(err){
+          console.err(err);
+          reject();
+        }else{
+          resolve();
+        }
+      }
+    ))};
+
+  async function addStartingCollection(re,userId){
     let numLands = 50;
     let baseLands = ["Plains", "Island", "Swamp", "Mountain", "Forest"];
 
@@ -95,7 +119,7 @@ exports.init_db = async function(db_file){
     for (l of baseLands){
       cards = cards.concat(Array(numLands).fill(l));
     }
-    re.add_cards(userId,cards);
+    await re.add_cards(userId,cards);
   }
 
   function init_collection(db,col_name){
