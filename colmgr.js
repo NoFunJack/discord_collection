@@ -99,11 +99,19 @@ exports.init_db = async function(db_file){
       return lines.join("\n")
   }
 
+  re.addBoosterPointsToAll = async function(count){
+    re.users.find().forEach(async function(u) {
+        u.boosterPoints += count;
+        re.users.update(u);
+        await saveDb(this.db);
+      });
+  }
+
   function saveDb(db){
     return new Promise((resolve,reject)=>
       db.saveDatabase(function(err){
         if(err){
-          console.err(err);
+          console.error(err);
           reject();
         }else{
           resolve();

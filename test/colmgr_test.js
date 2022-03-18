@@ -91,4 +91,12 @@ describe('Collection Manager', function () {
 
     db.tryAddBoosterCards("user123",["the one mock"]).should.finally.throw("no booster points");
   });
+
+  it('add boosterpoints to all players',async function () {
+    db.createUserProfile("user1");
+    db.createUserProfile("user2");
+    await db.addBoosterPointsToAll(2);
+    db.getUserProfile("user1").boosterPoints.should.be.equal(STARTING_BOOSTER_POINTS + 2);
+    db.getUserProfile("user2").boosterPoints.should.be.equal(STARTING_BOOSTER_POINTS + 2);
+  });
 });
