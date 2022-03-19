@@ -8,6 +8,11 @@ const commands = [
 	new SlashCommandBuilder().setName('collection').setDescription('Show my collection'),
 	new SlashCommandBuilder().setName('open_booster').setDescription('Open a booster'),
 	new SlashCommandBuilder().setName('try_booster').setDescription('Open a booster'),
+	new SlashCommandBuilder().setName('award_all_players').setDescription('Give booster Points to all Players')
+                             .addIntegerOption(option =>
+                                 option.setName('boosterpoints')
+                                       .setDescription('number of booster points to award all players')
+                                       .setRequired(true)),
 ]
 	.map(command => command.toJSON());
 

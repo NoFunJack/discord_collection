@@ -103,7 +103,7 @@ exports.init_db = async function(db_file){
     re.users.find().forEach(async function(u) {
         u.boosterPoints += count;
         re.users.update(u);
-        await saveDb(this.db);
+        await saveDb(re.db);
       });
   }
 

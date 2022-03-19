@@ -45,9 +45,13 @@ client.on('interactionCreate', async interaction => {
         let list = col.getCardsTxt(interaction.user.id);
         list ||= "none found";
 		await interaction.reply(list);
-	} else if (commandName === 'user') {
-        console.log(interaction);
-		await interaction.reply('User info.');
+	} else if (commandName === 'award_all_players') {
+        if (interaction.member.permissions.has('ADMINISTRATOR')){
+            await col.addBoosterPointsToAll(interaction.options.getInteger('boosterpoints'));
+            await interaction.reply('Booster Points added');
+        } else {
+		    await interaction.reply('Only Admin can award points');
+        }
 	}
 });
 
