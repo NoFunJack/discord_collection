@@ -9,7 +9,7 @@ describe('Collection Manager', function () {
   const STARTING_BOOSTER_POINTS = 15;
 
   var db;
-  let filename = path.join(__dirname, "unit_test.db");
+  let filename = path.join(__dirname,'data', "unit_test.db");
   beforeEach(async function() {
     db = await init_db(filename);
   });

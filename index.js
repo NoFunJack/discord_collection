@@ -11,7 +11,7 @@ const client = new Client({ intents: [Intents.FLAGS.GUILDS] });
 let col;
 // When the client is ready, run this code (only once)
 client.once('ready', async () => {
-	col = await colpkg.init_db(guildId + '.db');
+	col = await colpkg.init_db('data/'+ guildId + '.db');
     console.log('Ready!');
 });
 
