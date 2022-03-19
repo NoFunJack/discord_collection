@@ -67,11 +67,12 @@ client.on('interactionCreate', async interaction => {
         let content = "ERROR"
         if (setExists(setId)) {
             let newCards = getSetBooster(setId).map(c =>c.name);
-            if(col.tryAddBoosterCards(interaction.user.id,newCards)){
-                content = "Booster Content\n\n"
-                    + newCards.join("\n");
-            } else {
-                content = "sorry, no more bosterpoints " + interaction.user.username;
+            content = "Booster Content\n\n"
+                        + newCards.join("\n");
+            if (addToCollection){
+                if(!col.tryAddBoosterCards(interaction.user.id,newCards)){
+                    content = "sorry, no more bosterpoints " + interaction.user.username;
+                }
             }
         } else {
             content = 'set \"'+ setId + '\" not found';
