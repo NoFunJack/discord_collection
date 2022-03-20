@@ -1,6 +1,8 @@
 // Require the necessary discord.js classes
 const { Client, Intents, MessageActionRow, MessageSelectMenu } = require('discord.js')
-const { token, guildId } = require('./config.json')
+require('dotenv').config()
+const token = process.env.DISCORD_TOKEN
+const guildId = process.env.GUILD_ID
 
 const colpkg = require('./colmgr.js')
 const { getSetBooster, setExists } = require('./boosterBuilder.js')

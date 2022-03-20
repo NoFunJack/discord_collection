@@ -2,4 +2,4 @@ config.json
 node_modules
 *.db
 data/**
-config-test.json
+.env
