@@ -1,5 +1,5 @@
 // Require the necessary discord.js classes
-const { Client, Intents, MessageActionRow, MessageSelectMenu } = require('discord.js')
+const { Client, Intents, MessageActionRow, MessageEmbed, MessageSelectMenu } = require('discord.js')
 require('dotenv').config()
 const token = process.env.DISCORD_TOKEN
 const guildId = process.env.GUILD_ID
@@ -44,9 +44,17 @@ client.on('interactionCreate', async interaction => {
   } else if (commandName === 'open_booster') {
     await buildSetSelector(interaction, 'open_booster')
   } else if (commandName === 'collection') {
-    let list = col.getCardsTxt(interaction.user.id)
-    list ||= 'none found'
-    await interaction.reply(list)
+    const list = col.getCardsTxt(interaction.user.id)
+    if (list) {
+      await interaction.reply({
+        files: [{
+          attachment: Buffer.from(list, 'utf-8'),
+          name: 'collection of ' + interaction.user.username + '.txt'
+        }]
+      })
+    } else {
+      await interaction.reply('none found')
+    }
   } else if (commandName === 'award_all_players') {
     if (interaction.member.permissions.has('ADMINISTRATOR')) {
       await col.addBoosterPointsToAll(interaction.options.getInteger('boosterpoints'))
