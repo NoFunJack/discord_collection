@@ -2,4 +2,5 @@ config.json
 node_modules
 *.db
 data/**
-.env
+.env*
+*.sh
