@@ -2,6 +2,7 @@
   "name": "discord_mtg_collection",
   "version": "1.0.0",
   "description": "mtg collection discord bot",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "test": "mocha"

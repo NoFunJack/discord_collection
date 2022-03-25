@@ -1,20 +1,20 @@
-const should = require('should')
-const fs = require('fs')
-const path = require('path')
+import should from 'should'
+import fs from 'fs'
+import path from 'path'
 
-const { initDb } = require('./../colmgr')
+import { initDb } from '../modules/colmgr.mjs'
 
 describe('Collection Manager', function () {
   const STARTING_BOOSTER_POINTS = 15
 
   let db
-  const filename = path.join(__dirname, 'data', 'unit_test.db')
+  const filename = path.join('data', 'unit_test.db')
   beforeEach(async function () {
     db = await initDb(filename)
   })
 
   afterEach(async function () {
-    return await db.delete()
+    await db.delete()
   })
 
   before(function () {

@@ -1,7 +1,7 @@
-const loki = require('lokijs')
-const fs = require('fs-extra')
+import loki from 'lokijs'
+import fs from 'fs-extra'
 
-exports.initDb = async function (dbFile) {
+export async function initDb (dbFile) {
   const re = {}
   fs.ensureFileSync(dbFile, err => {
     if (err) {

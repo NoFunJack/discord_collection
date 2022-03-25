@@ -1,11 +1,13 @@
 // Require the necessary discord.js classes
-const { Client, Intents, MessageActionRow, MessageEmbed, MessageSelectMenu } = require('discord.js')
-require('dotenv').config()
+import { Client, Intents, MessageActionRow, MessageEmbed, MessageSelectMenu } from 'discord.js'
+import dotenv from 'dotenv'
+dotenv.config()
+import {initDb} from './modules/colmgr.mjs'
+import { getSetBooster, setExists } from './modules/boosterBuilder.mjs'
+
 const token = process.env.DISCORD_TOKEN
 const guildId = process.env.GUILD_ID
 
-const colpkg = require('./colmgr.js')
-const { getSetBooster, setExists } = require('./boosterBuilder.js')
 
 // Create a new client instance
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] })
@@ -13,7 +15,7 @@ const client = new Client({ intents: [Intents.FLAGS.GUILDS] })
 let col
 // When the client is ready, run this code (only once)
 client.once('ready', async () => {
-  col = await colpkg.initDb('data/' + guildId + '.db')
+  col = await initDb('data/' + guildId + '.db')
   console.log('Ready!')
 })
 

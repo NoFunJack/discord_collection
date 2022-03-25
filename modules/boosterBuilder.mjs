@@ -1,7 +1,6 @@
+import allcards from '../data/all-cards.json' assert {type: 'json'}
 
-const allcards = require('./data/all-cards.json')
-
-module.exports.getSetBooster = function (setId) {
+export function getSetBooster(setId) {
   const sig = { common: 0, uncommon: 0, rare: 0, mythic: 0 }
   sig.add = function (type, num) {
     this[type] += num
@@ -179,7 +178,7 @@ module.exports.getSetBooster = function (setId) {
   return booster
 }
 
-module.exports.setExists = function (setId) {
+export function setExists(setId) {
   return allcards.filter(c => c.set === setId).length > 0
 }
 
