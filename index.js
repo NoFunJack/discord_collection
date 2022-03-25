@@ -80,8 +80,9 @@ client.on('interactionCreate', async interaction => {
       content = 'Booster Content\n\n' +
                         newCards.join('\n')
       if (addToCollection) {
-        if (!col.tryAddBoosterCards(interaction.user.id, newCards)) {
+        if (!await col.tryAddBoosterCards(interaction.user.id, newCards)) {
           content = 'sorry, no more bosterpoints ' + interaction.user.username
+          console.log(content)
         }
       }
     } else {

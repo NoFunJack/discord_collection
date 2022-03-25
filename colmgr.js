@@ -25,8 +25,9 @@ exports.initDb = async function (dbFile) {
       user.boosterPoints -= 1
       re.users.update(user)
       await saveDb(this.db)
+      return true;
     } else {
-      throw new Error('no booster points')
+      return false;
     }
   }
 
