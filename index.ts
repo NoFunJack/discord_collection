@@ -1,8 +1,8 @@
 // Require the necessary discord.js classes
-import { Client, Intents, MessageActionRow, MessageEmbed, MessageSelectMenu } from 'discord.js'
+import { MessageComponentInteraction,Client, Intents, MessageActionRow, Interaction, CacheType, MessageSelectMenu, SelectMenuInteraction, CommandInteraction } from 'discord.js'
 import dotenv from 'dotenv'
 dotenv.config()
-import {initDb} from './modules/colmgr.mjs'
+import {initDb, Collection} from './modules/colmgr'
 import { getSetBooster, setExists } from './modules/boosterBuilder.mjs'
 
 const token = process.env.DISCORD_TOKEN
@@ -12,7 +12,7 @@ const guildId = process.env.GUILD_ID
 // Create a new client instance
 const client = new Client({ intents: [Intents.FLAGS.GUILDS] })
 
-let col
+let col: Collection
 // When the client is ready, run this code (only once)
 client.once('ready', async () => {
   col = await initDb('data/' + guildId + '.db')
@@ -31,13 +31,9 @@ client.on('interactionCreate', async interaction => {
     try {
       user = col.getUserProfile(interaction.user.id)
     } catch (err) {
-      try {
-        col.createUserProfile(interaction.user.id)
-        user = col.getUserProfile(interaction.user.id)
-        console.log('created new User Profile')
-      } catch (err) {
-        console.error(err)
-      }
+      col.createUserProfile(interaction.user.id)
+      user = col.getUserProfile(interaction.user.id)
+      console.log('created new User Profile')
     }
 
     await interaction.reply('you have ' + user.boosterPoints + ' Boosterpoints!')
@@ -58,9 +54,14 @@ client.on('interactionCreate', async interaction => {
       await interaction.reply('none found')
     }
   } else if (commandName === 'award_all_players') {
-    if (interaction.member.permissions.has('ADMINISTRATOR')) {
-      await col.addBoosterPointsToAll(interaction.options.getInteger('boosterpoints'))
-      await interaction.reply('Booster Points added')
+    if (interaction?.member?.permissions === 'ADMINISTRATOR') {
+      const points =  interaction.options.getInteger('boosterpoints')
+      if(points != null){
+        await col.addBoosterPointsToAll(points)
+        await interaction.reply('Booster Points added')
+      } else {
+        throw new Error('no booster points parameter found')
+      }
     } else {
       await interaction.reply('Only Admin can award points')
     }
@@ -68,14 +69,14 @@ client.on('interactionCreate', async interaction => {
 })
 
 client.on('interactionCreate', async interaction => {
-  if (!interaction.isSelectMenu()) return
+  if (!interaction.isSelectMenu()) return;
+  const values = interaction.values[0]
   if (interaction.customId === 'try_booster') {
-    openBooster(interaction, false)
+    openBooster(interaction, values, false)
   } else if (interaction.customId === 'open_booster') {
-    openBooster(interaction, true)
+    openBooster(interaction, values, true)
   }
-  async function openBooster (interaction, addToCollection) {
-    const setId = interaction.values[0]
+  async function openBooster (interaction: SelectMenuInteraction ,setId: string, addToCollection: boolean) {
     let content = 'ERROR'
     if (setExists(setId)) {
       const newCards = getSetBooster(setId).map(c => c.name)
@@ -104,7 +105,7 @@ process.on('SIGINT', () => {
   process.exit(0)
 })
 
-async function buildSetSelector (interaction, id) {
+async function buildSetSelector (interaction: CommandInteraction, id: string) {
   const row = new MessageActionRow()
     .addComponents(
       new MessageSelectMenu()
