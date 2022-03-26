@@ -2,7 +2,7 @@
 import { MessageComponentInteraction,Client, Intents, MessageActionRow, Interaction, CacheType, MessageSelectMenu, SelectMenuInteraction, CommandInteraction } from 'discord.js'
 import dotenv from 'dotenv'
 dotenv.config()
-import {initDb, Collection} from './modules/colmgr'
+import {initDb, Collection} from './modules/colmgr.js'
 import { getSetBooster, setExists } from './modules/boosterBuilder.mjs'
 
 const token = process.env.DISCORD_TOKEN
