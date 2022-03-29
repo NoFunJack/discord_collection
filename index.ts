@@ -3,10 +3,11 @@ import { MessageComponentInteraction,Client, Intents, MessageActionRow, Interact
 import dotenv from 'dotenv'
 dotenv.config()
 import {initDb, Collection} from './modules/colmgr.js'
-import { getSetBooster, setExists } from './modules/boosterBuilder.mjs'
+import {getScryFallBuilder} from './modules/boosterBuilder.mjs'
 
 const token = process.env.DISCORD_TOKEN
 const guildId = process.env.GUILD_ID
+const boosterBuilder = getScryFallBuilder()
 
 
 // Create a new client instance
@@ -78,8 +79,8 @@ client.on('interactionCreate', async interaction => {
   }
   async function openBooster (interaction: SelectMenuInteraction ,setId: string, addToCollection: boolean) {
     let content = 'ERROR'
-    if (setExists(setId)) {
-      const newCards = getSetBooster(setId).map(c => c.name)
+    if (boosterBuilder.setExists(setId)) {
+      const newCards = boosterBuilder.getSetBooster(setId).map(c => c.name)
       content = 'Booster Content\n\n' +
                         newCards.join('\n')
       if (addToCollection) {
