@@ -1,19 +1,21 @@
-import allcards from '../data/all-cards.json' assert {type: 'json'}
+import allcards from '../data/all-cards.json' // assert {type: 'json'}
 
 export const getScryFallBuilder = () => new Boosterbuilder(allcards)
 
 export class Boosterbuilder {
 
-  constuctor(cardData){
-    this.cardData = cardData
+  private allcards: any
+
+  constructor(cardData: any){
+    this.allcards = cardData
   }
 
-  getSetBooster(setId) {
-    const sig = { common: 0, uncommon: 0, rare: 0, mythic: 0 }
-    sig.add = function (type, num) {
+  getSetBooster(setId: string) {
+    const sig: any = { common: 0, uncommon: 0, rare: 0, mythic: 0 }
+    sig.add = function (type: string, num: number) {
       this[type] += num
     }
-    sig.addWeighted = function (spec) {
+    sig.addWeighted = function (spec: any) {
       let sum = 0; const r = Math.random()
       for (const s of spec) {
         sum += s.weight
@@ -28,42 +30,42 @@ export class Boosterbuilder {
     sig.addWeighted([
       {
         weight: 0.35,
-        change: s => {
+        change: () => {
           sig.add('common', 5)
           sig.add('uncommon', 1)
         }
       },
       {
         weight: 0.40,
-        change: s => {
+        change: () => {
           sig.add('common', 4)
           sig.add('uncommon', 2)
         }
       },
       {
         weight: 0.125,
-        change: s => {
+        change: () => {
           sig.add('common', 3)
           sig.add('uncommon', 3)
         }
       },
       {
         weight: 0.07,
-        change: s => {
+        change: () => {
           sig.add('common', 2)
           sig.add('uncommon', 4)
         }
       },
       {
         weight: 0.035,
-        change: s => {
+        change: () => {
           sig.add('common', 1)
           sig.add('uncommon', 5)
         }
       },
       {
         weight: 0.02,
-        change: s => {
+        change: () => {
           sig.add('uncommon', 6)
         }
       }
@@ -73,11 +75,11 @@ export class Boosterbuilder {
     sig.addWeighted([
       {
         weight: 0.75,
-        change: s => sig.add('common', 1)
+        change: () => sig.add('common', 1)
       },
       {
         weight: 0.25,
-        change: s => sig.add('uncommon', 1)
+        change: () => sig.add('uncommon', 1)
       }
     ])
 
@@ -85,58 +87,58 @@ export class Boosterbuilder {
     sig.addWeighted([
       {
         weight: 0.49,
-        change: s => sig.add('common', 2)
+        change: () => sig.add('common', 2)
       },
       {
         weight: 0.245,
-        change: s => {
+        change: () => {
           sig.add('common', 1)
           sig.add('uncommon', 1)
         }
       },
       {
         weight: 0.151375,
-        change: s => {
+        change: () => {
           sig.add('common', 1)
           sig.add('rare', 1)
         }
       },
       {
         weight: 0.023625,
-        change: s => {
+        change: () => {
           sig.add('common', 1)
           sig.add('mythic', 1)
         }
       },
       {
         weight: 0.0031,
-        change: s => sig.add('uncommon', 2)
+        change: () => sig.add('uncommon', 2)
       },
       {
         weight: 0.037195,
-        change: s => {
+        change: () => {
           sig.add('uncommon', 1)
           sig.add('rare', 1)
         }
       },
       {
         weight: 0.005805,
-        change: s => {
+        change: () => {
           sig.add('uncommon', 1)
           sig.add('mythic', 1)
         }
       },
       {
         weight: 0.0119716,
-        change: s => sig.add('rare', 2)
+        change: () => sig.add('rare', 2)
       },
       {
         weight: 0.0002916,
-        change: s => sig.add('mythic', 2)
+        change: () => sig.add('mythic', 2)
       },
       {
         weight: 0.0040237344,
-        change: s => {
+        change: () => {
           sig.add('rare', 1)
           sig.add('mythic', 1)
         }
@@ -146,51 +148,51 @@ export class Boosterbuilder {
     sig.addWeighted([
       {
         weight: 0.865,
-        change: s => sig.add('rare', 1)
+        change: () => sig.add('rare', 1)
       },
       {
         weight: 0.135,
-        change: s => sig.add('mythic', 1)
+        change: () => sig.add('mythic', 1)
       }
     ])
     // Foil slot
     sig.addWeighted([
       {
         weight: 0.714,
-        change: s => sig.add('common', 1)
+        change: () => sig.add('common', 1)
       },
       {
         weight: 0.214,
-        change: s => sig.add('uncommon', 1)
+        change: () => sig.add('uncommon', 1)
       },
       {
         weight: 0.062,
-        change: s => sig.add('rare', 1)
+        change: () => sig.add('rare', 1)
       },
       {
         weight: 0.01,
-        change: s => sig.add('mythic', 1)
+        change: () => sig.add('mythic', 1)
       }
     ])
 
     const booster = []
-    const setCards = allcards.filter(c => c.set === setId)
+    const setCards = this.allcards.filter((c: any) => c.set === setId)
 
     for (const r of ['common', 'uncommon', 'rare', 'mythic']) {
-      const rarityCards = setCards.filter(c => c.rarity === r)
+      const rarityCards = setCards.filter((c: any) => c.rarity === r)
       for (let i = 0; i < sig[r]; i++) {
-        booster.push(getRandomFromList(rarityCards))
+        booster.push(this.getRandomFromList(rarityCards))
       }
     }
 
     return booster
 }
 
-  setExists(setId) {
-    return allcards.filter(c => c.set === setId).length > 0
+  setExists(setId: string) {
+    return allcards.filter((c: any) => c.set === setId).length > 0
   }
 
-  getRandomFromList (array) {
+  getRandomFromList (array: any[]) {
     return array[Math.floor(Math.random() * array.length)]
   }
 }
