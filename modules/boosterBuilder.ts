@@ -1,4 +1,82 @@
 import allcards from '../data/all-cards.json' // assert {type: 'json'}
+import boosterConfJson from './boosterBuilderConfig.json'
+const boosterConf: BoosterConfig = boosterConfJson
+
+type BoosterConfig = {
+  [key: string]: string[] | WeightedEntry[]
+}
+
+type WeightedEntry = {
+  weight: number;
+  cards: string[]
+}
+
+class Signature {
+  common=0;
+  uncommon=0;
+  rare=0;
+  mythic=0;
+
+  public add(short: string) {
+    switch(short) {
+      case "C":
+        this.common++
+        break
+      case "U":
+        this.uncommon++
+        break
+      case "R":
+        this.rare++
+        break
+      case "M":
+        this.mythic++
+        break
+      default:
+        throw `Unkown short type: ${short}`
+    }
+  }
+}
+
+function rollSignature(sig: Signature, boosterType: string){
+
+  const conf = boosterConf[boosterType]
+  const weighted: WeightedEntry[] = []
+
+  if(!conf){
+    throw `booster config error in entry: ${boosterType}`
+  }
+
+  for(const c of conf){
+    if(typeof c === "string"){
+      rollSignature(sig,c)
+    }else {
+      weighted.push(c)
+    }
+  }
+
+  if(weighted){
+    const norm = weighted
+      .map(w => w.weight)
+      .reduce((a,b) => a+b,0)
+
+    let sum = 0; const r = Math.random()
+    for (const w of weighted) {
+      sum += w.weight/norm
+      if (r <= sum) {
+        w.cards.forEach(it => {
+          if(it.length == 1){
+            sig.add(it)
+          } else {
+            rollSignature(sig,it)
+          }
+        })
+        return
+      }
+    }
+
+  }
+
+}
 
 export const getScryFallBuilder = () => new Boosterbuilder(allcards)
 
@@ -11,174 +89,13 @@ export class Boosterbuilder {
   }
 
   getSetBooster(setId: string) {
-    const sig: any = { common: 0, uncommon: 0, rare: 0, mythic: 0 }
-    sig.add = function (type: string, num: number) {
-      this[type] += num
-    }
-    sig.addWeighted = function (spec: any) {
-      let sum = 0; const r = Math.random()
-      for (const s of spec) {
-        sum += s.weight
-        if (r <= sum) {
-          s.change(this)
-          return
-        }
-      }
-    }
-
-    // Connected
-    sig.addWeighted([
-      {
-        weight: 0.35,
-        change: () => {
-          sig.add('common', 5)
-          sig.add('uncommon', 1)
-        }
-      },
-      {
-        weight: 0.40,
-        change: () => {
-          sig.add('common', 4)
-          sig.add('uncommon', 2)
-        }
-      },
-      {
-        weight: 0.125,
-        change: () => {
-          sig.add('common', 3)
-          sig.add('uncommon', 3)
-        }
-      },
-      {
-        weight: 0.07,
-        change: () => {
-          sig.add('common', 2)
-          sig.add('uncommon', 4)
-        }
-      },
-      {
-        weight: 0.035,
-        change: () => {
-          sig.add('common', 1)
-          sig.add('uncommon', 5)
-        }
-      },
-      {
-        weight: 0.02,
-        change: () => {
-          sig.add('uncommon', 6)
-        }
-      }
-    ])
-
-    // Fireworks - Head Turning
-    sig.addWeighted([
-      {
-        weight: 0.75,
-        change: () => sig.add('common', 1)
-      },
-      {
-        weight: 0.25,
-        change: () => sig.add('uncommon', 1)
-      }
-    ])
-
-    // Fireworks Wildcards
-    sig.addWeighted([
-      {
-        weight: 0.49,
-        change: () => sig.add('common', 2)
-      },
-      {
-        weight: 0.245,
-        change: () => {
-          sig.add('common', 1)
-          sig.add('uncommon', 1)
-        }
-      },
-      {
-        weight: 0.151375,
-        change: () => {
-          sig.add('common', 1)
-          sig.add('rare', 1)
-        }
-      },
-      {
-        weight: 0.023625,
-        change: () => {
-          sig.add('common', 1)
-          sig.add('mythic', 1)
-        }
-      },
-      {
-        weight: 0.0031,
-        change: () => sig.add('uncommon', 2)
-      },
-      {
-        weight: 0.037195,
-        change: () => {
-          sig.add('uncommon', 1)
-          sig.add('rare', 1)
-        }
-      },
-      {
-        weight: 0.005805,
-        change: () => {
-          sig.add('uncommon', 1)
-          sig.add('mythic', 1)
-        }
-      },
-      {
-        weight: 0.0119716,
-        change: () => sig.add('rare', 2)
-      },
-      {
-        weight: 0.0002916,
-        change: () => sig.add('mythic', 2)
-      },
-      {
-        weight: 0.0040237344,
-        change: () => {
-          sig.add('rare', 1)
-          sig.add('mythic', 1)
-        }
-      }
-    ])
-    // Rare slot
-    sig.addWeighted([
-      {
-        weight: 0.865,
-        change: () => sig.add('rare', 1)
-      },
-      {
-        weight: 0.135,
-        change: () => sig.add('mythic', 1)
-      }
-    ])
-    // Foil slot
-    sig.addWeighted([
-      {
-        weight: 0.714,
-        change: () => sig.add('common', 1)
-      },
-      {
-        weight: 0.214,
-        change: () => sig.add('uncommon', 1)
-      },
-      {
-        weight: 0.062,
-        change: () => sig.add('rare', 1)
-      },
-      {
-        weight: 0.01,
-        change: () => sig.add('mythic', 1)
-      }
-    ])
+    const sig = new Signature()
+    rollSignature(sig,"setbooster")
 
     const booster = []
     const setCards = this.allcards.filter((c: any) => c.set === setId)
 
-    for (const r of ['common', 'uncommon', 'rare', 'mythic']) {
+    for (const r of Object.values(Rarity)) {
       const rarityCards = setCards.filter((c: any) => c.rarity === r)
       for (let i = 0; i < sig[r]; i++) {
         booster.push(this.getRandomFromList(rarityCards))
@@ -195,4 +112,12 @@ export class Boosterbuilder {
   getRandomFromList (array: any[]) {
     return array[Math.floor(Math.random() * array.length)]
   }
+}
+
+
+export enum Rarity{
+  common='common',
+  uncommon='uncommon',
+  rare='rare',
+  mythic='mythic',
 }

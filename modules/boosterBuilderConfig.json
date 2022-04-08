@@ -1,0 +1,94 @@
+{
+  "setbooster":["connected", "headturning", "wildcard", "rareslot","foil"],
+  "connected": [
+      {
+        "weight": 35,
+        "cards": ["C","C","C","C","C","U"]
+      },
+      {
+        "weight": 40,
+        "cards": ["C","C","C","C","U","U"]
+      },
+      {
+        "weight": 12.5,
+        "cards": ["C","C","C","U","U","U"]
+      },
+      {
+        "weight": 7,
+        "cards": ["C","C","U","U","U","U"]
+      },
+      {
+        "weight": 3.5,
+        "cards": ["C","U","U","U","U","U"]
+      },
+      {
+        "weight": 2,
+        "cards": ["U","U","U","U","U","U"]
+      }
+  ],
+  "wildcard": [
+    {
+      "weight": 49,
+      "cards": ["C","C"]
+    },
+    {
+      "weight": 24.5,
+      "cards": ["C","U"]
+    },
+    {
+      "weight": 17.5,
+      "cards": ["C","R"]
+    },
+    {
+      "weight": 3.1,
+      "cards": ["U","U"]
+    },
+    {
+      "weight": 4.3,
+      "cards": ["U","rareslot"]
+    },
+    {
+      "weight": 1.6,
+      "cards": ["rareslot","rareslot"]
+    }
+  ],
+  "rareslot": [
+    {
+      "weight": 6.4,
+      "cards": ["R"]
+    },
+    {
+      "weight": 1,
+      "cards": ["M"]
+    }
+  ],
+  "headturning": [
+    {
+      "weight": 3,
+      "cards": ["C"]
+    },
+    {
+      "weight": 1,
+      "cards": ["U"]
+    }
+  ],
+  "foil": [
+    {
+      "weight": 71.4,
+      "cards": ["C"]
+    },
+    {
+      "weight": 21.4,
+      "cards": ["U"]
+    },
+    {
+      "weight": 6.2,
+      "cards": ["R"]
+    },
+    {
+      "weight": 1,
+      "cards": ["M"]
+    }
+  ]
+}
+
