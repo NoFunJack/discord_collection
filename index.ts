@@ -1,5 +1,5 @@
 // Require the necessary discord.js classes
-import { MessageComponentInteraction,Client, Intents, MessageActionRow, Interaction, CacheType, MessageSelectMenu, SelectMenuInteraction, CommandInteraction } from 'discord.js'
+import { MessageComponentInteraction,Client, Intents, MessageActionRow, Interaction, CacheType, MessageSelectMenu, SelectMenuInteraction, CommandInteraction, GuildMember } from 'discord.js'
 import dotenv from 'dotenv'
 dotenv.config()
 import {initDb, Collection} from './modules/colmgr.js'
@@ -55,7 +55,8 @@ client.on('interactionCreate', async interaction => {
       await interaction.reply('none found')
     }
   } else if (commandName === 'award_all_players') {
-    if (interaction?.member?.permissions === 'ADMINISTRATOR') {
+    const member = interaction.member as GuildMember;
+    if (member.permissions.has("ADMINISTRATOR")) {
       const points =  interaction.options.getInteger('boosterpoints')
       if(points != null){
         await col.addBoosterPointsToAll(points)
