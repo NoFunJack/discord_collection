@@ -1,4 +1,5 @@
 import allcards from '../data/all-cards.json' // assert {type: 'json'}
+const cardData: CardData[] = allcards;
 import boosterConfJson from './boosterBuilderConfig.json'
 const boosterConf: BoosterConfig = boosterConfJson
 
@@ -35,6 +36,12 @@ class Signature {
         throw `Unkown short type: ${short}`
     }
   }
+}
+
+export interface CardData {
+  name: string;
+  set: string;
+  rarity: string;
 }
 
 function rollSignature(sig: Signature, boosterType: string){
@@ -78,17 +85,17 @@ function rollSignature(sig: Signature, boosterType: string){
 
 }
 
-export const getScryFallBuilder = () => new Boosterbuilder(allcards)
+export const getScryFallBuilder = () => new Boosterbuilder(cardData)
 
 export class Boosterbuilder {
 
-  private allcards: any
+  private allcards: CardData[]
 
-  constructor(cardData: any){
+  constructor(cardData: CardData[]){
     this.allcards = cardData
   }
 
-  getSetBooster(setId: string) {
+  getSetBooster(setId: string): CardData[] {
     const sig = new Signature()
     rollSignature(sig,"setbooster")
 

@@ -1,8 +1,9 @@
-import {Boosterbuilder, Rarity} from '../boosterBuilder'
+import {Boosterbuilder, Rarity, CardData} from '../boosterBuilder'
 
 const MOCK_SET='mc1'
 
 class MockCard{
+  public name= "mock card"
   public rarity: Rarity
   public set= MOCK_SET
   public type_line= "mock type"
@@ -39,7 +40,7 @@ for(let i=0;i<1000;i++){
 describe.each(boosters)('SetBooster Properties of %j', function(cards){
 
   test('mock set should be used', function(){
-    cards.forEach((c: MockCard) => expect(c.set).toBe(MOCK_SET))
+    cards.forEach((c: CardData) => expect(c.set).toBe(MOCK_SET))
   })
 
   it('should contain 11 cards',function(){

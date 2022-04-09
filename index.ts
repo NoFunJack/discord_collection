@@ -3,7 +3,7 @@ import { MessageComponentInteraction,Client, Intents, MessageActionRow, Interact
 import dotenv from 'dotenv'
 dotenv.config()
 import {initDb, Collection} from './modules/colmgr.js'
-import {getScryFallBuilder} from './modules/boosterBuilder.mjs'
+import {getScryFallBuilder} from './modules/boosterBuilder'
 
 const token = process.env.DISCORD_TOKEN
 const guildId = process.env.GUILD_ID
