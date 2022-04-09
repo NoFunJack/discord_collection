@@ -58,8 +58,6 @@ export class Collection {
       userId: userId,
       boosterPoints: 15
     })
-
-    this.addStartingCollection(userId)
   }
 
   getUserProfile(userId: string) {
@@ -124,17 +122,6 @@ export class Collection {
       }
       ))
   };
-
-  private async addStartingCollection(userId: string) {
-    const numLands = 50
-    const baseLands = ['Plains', 'Island', 'Swamp', 'Mountain', 'Forest']
-
-    let cards: string[] = []
-    for (const l of baseLands) {
-      cards = cards.concat(Array(numLands).fill(l))
-    }
-    await this.add_cards(userId, cards)
-  }
 }
 
 export async function initDb (dbFile: string) {

@@ -51,13 +51,13 @@ describe('Collection Manager', function () {
     expect(() => db.getUserProfile('user123')).toThrow('User not found')
   })
 
-  it('New user should have starting collection', function () {
+  it('New user should not have starting collection only boosterpoints', function () {
     db.createUserProfile('user123')
     const up = db.getUserProfile('user123')
     expect(up).not.toBeNull()
     expect(up.boosterPoints).toBe(STARTING_BOOSTER_POINTS)
     const startCol = db.getCards(up.userId)
-    expect(startCol).not.toHaveLength(0)
+    expect(startCol).toHaveLength(0)
   })
 
   it('creates user readable list of collection', async function () {
