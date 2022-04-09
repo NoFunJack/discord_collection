@@ -26,6 +26,8 @@ const boosterbuilder = new Boosterbuilder(
     new MockCard(Rarity.uncommon),
     new MockCard(Rarity.rare),
     new MockCard(Rarity.mythic),
+    new MockCard(Rarity.common,"Basic Land — Plains"),
+    new MockCard(Rarity.mythic,"Basic Land — Swamp"),
   ]
 )
 
@@ -40,7 +42,7 @@ for(let i=0;i<1000;i++){
 describe.each(boosters)('SetBooster Properties of %j', function(cards){
 
   test('mock set should be used', function(){
-    cards.forEach((c: CardData) => expect(c.set).toBe(MOCK_SET))
+    cards.forEach(c => expect(c.set).toBe(MOCK_SET))
   })
 
   it('should contain 11 cards',function(){
@@ -53,6 +55,8 @@ describe.each(boosters)('SetBooster Properties of %j', function(cards){
     expect(len).toBeGreaterThanOrEqual(1)
   })
 
-  it.todo('should not contain basic lands')
+  it('should not contain basic lands', function() {
+    cards.forEach(c => expect(c.type_line).not.toMatch(/^Basic Land.*/))
+  })
 
 })

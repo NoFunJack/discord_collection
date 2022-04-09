@@ -42,6 +42,7 @@ export interface CardData {
   name: string;
   set: string;
   rarity: string;
+  type_line: string;
 }
 
 function rollSignature(sig: Signature, boosterType: string){
@@ -93,6 +94,7 @@ export class Boosterbuilder {
 
   constructor(cardData: CardData[]){
     this.allcards = cardData
+      .filter(c => !c.type_line.startsWith('Basic Land — '))
   }
 
   getSetBooster(setId: string): CardData[] {
