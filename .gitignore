@@ -5,3 +5,4 @@ data/**
 .env*
 *.sh
 build
+all-cards.json
