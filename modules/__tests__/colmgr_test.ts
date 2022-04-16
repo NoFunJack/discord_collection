@@ -69,23 +69,35 @@ describe('Collection Manager', function () {
 
   it('add Booster cards', async function () {
     db.createUserProfile('user123')
-    await db.tryAddBoosterCards('user123', ['the one mock'])
+    await db.tryAddBoosterCards('user123', ['the one mock'], 1)
     expect(db.getCards('user123').map(c => c.card)).toContainEqual('the one mock')
     const up = db.getUserProfile('user123')
     expect(up.boosterPoints).toBe(STARTING_BOOSTER_POINTS - 1)
+  })
+
+  it('add Booster cards with ok amount', async function () {
+    db.createUserProfile('user123')
+    expect(db.tryAddBoosterCards('user123', ['the one mock'], STARTING_BOOSTER_POINTS)).resolves.toBeTruthy()
+      const up = db.getUserProfile('user123')
+      expect(up.boosterPoints).toBe(0)
+  })
+
+  it('add Booster cards with large amount', async function () {
+    db.createUserProfile('user123')
+    expect(db.tryAddBoosterCards('user123', ['the one mock'], STARTING_BOOSTER_POINTS + 1)).resolves.toBeFalsy()
   })
 
   it('add booster cards with no booster points', async function () {
     db.createUserProfile('user123')
     for (let i = 0; i < STARTING_BOOSTER_POINTS; i++) {
       // use up all booster points
-      await db.tryAddBoosterCards('user123', ['the one mock'])
+      await db.tryAddBoosterCards('user123', ['the one mock'], 1)
       const up = db.getUserProfile('user123')
       expect(up.boosterPoints).toBe(STARTING_BOOSTER_POINTS - i - 1)
     }
     const up = db.getUserProfile('user123')
     expect(up.boosterPoints).toBe(0)
-    expect(db.tryAddBoosterCards('user123', ['the one mock'])).resolves.toBeFalsy()
+    expect(db.tryAddBoosterCards('user123', ['the one mock'], 1)).resolves.toBeFalsy()
   })
 
   it('add boosterpoints to all players', async function () {

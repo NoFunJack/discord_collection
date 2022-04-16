@@ -16,11 +16,11 @@ export class Collection {
     return this.cards.find({ owner: user })
   }
 
-  async tryAddBoosterCards(userId: string, cards: string[]) {
+  async tryAddBoosterCards(userId: string, cards: string[], amount: number) {
     const user = this.users.findOne({ userId: userId })
-    if (user.boosterPoints > 0) {
+    if (user.boosterPoints >= amount) {
       this.add_cards(userId, cards)
-      user.boosterPoints -= 1
+      user.boosterPoints -= amount
       this.users.update(user)
       await this.saveDb()
       return true;

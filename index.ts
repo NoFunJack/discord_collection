@@ -73,19 +73,23 @@ client.on('interactionCreate', async interaction => {
 client.on('interactionCreate', async interaction => {
   if (!interaction.isSelectMenu()) return;
   const values = interaction.values[0]
-  if (interaction.customId === 'try_booster') {
+  if (interaction.customId.startsWith('try_booster')) {
     openBooster(interaction, values, false)
-  } else if (interaction.customId === 'open_booster') {
+  } else if (interaction.customId.startsWith('open_booster')) {
     openBooster(interaction, values, true)
   }
   async function openBooster (interaction: SelectMenuInteraction ,setId: string, addToCollection: boolean) {
+    let amount = interaction.customId.split(' ')[1]
     let content = 'ERROR'
     if (boosterBuilder.setExists(setId)) {
-      const newCards = boosterBuilder.getSetBooster(setId).map(c => c.name)
+      let newCards: string[] = []
+      for(let i = 0;i<parseInt(amount);i++){
+        newCards = newCards.concat(boosterBuilder.getSetBooster(setId).map(c => c.name))
+      }
       content = 'Booster Content\n\n' +
                         newCards.join('\n')
       if (addToCollection) {
-        if (!await col.tryAddBoosterCards(interaction.user.id, newCards)) {
+        if (!await col.tryAddBoosterCards(interaction.user.id, newCards, parseInt(amount))) {
           content = 'sorry, no more bosterpoints ' + interaction.user.username
           console.log(content)
         }
@@ -108,27 +112,31 @@ process.on('SIGINT', () => {
 })
 
 async function buildSetSelector (interaction: CommandInteraction, id: string) {
+  let amount = interaction.options.getInteger('amount')
+  amount ||= 1
   const row = new MessageActionRow()
     .addComponents(
       new MessageSelectMenu()
-        .setCustomId(id)
+        .setCustomId(`${id} ${amount}`)
         .setPlaceholder('Nothing selected')
         .addOptions([
           {
-            label: 'Kamigawa: Neon Dynasty',
-            // description: 'This is a description',
+            label: 'neo',
+            description: 'Kamigawa: Neon Dynasty',
             value: 'neo'
           },
           {
-            label: 'Innistrad: Crimson Vow',
+            label: 'vow',
+            description: 'Innistrad: Crimson Vow',
             value: 'vow'
           },
           {
-            label: 'Innistrad: Midnight Hunt',
+            label: 'mid',
+            description: 'Innistrad: Midnight Hunt',
             value: 'mid'
           }
         ])
     )
 
-  await interaction.reply({ content: 'Select Set', components: [row] })
+  await interaction.reply({ content: `Open ${amount} boosters for set:`, components: [row] })
 }
