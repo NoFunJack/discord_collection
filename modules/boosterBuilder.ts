@@ -1,6 +1,6 @@
-import allcards from '../all-cards.json' assert {type: 'json'}
+import allcards from '../all-cards.json' // assert {type: 'json'}
 const cardData: CardData[] = allcards;
-import boosterConfJson from './boosterBuilderConfig.json' assert {type: 'json'}
+import boosterConfJson from './boosterBuilderConfig.json' // assert {type: 'json'}
 const boosterConf: BoosterConfig = boosterConfJson
 
 type BoosterConfig = {
