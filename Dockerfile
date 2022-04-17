@@ -13,5 +13,5 @@ COPY build /app
 RUN mkdir /app/data
 RUN node /app/scripts/deploy-commands.js
 #RUN node scripts/updateCardJson.js /app/data
-ENTRYPOINT ["node","--es-module-specifier-resolution=node", "app/index.js"]
+ENTRYPOINT ["node", "app/index.js"]
 

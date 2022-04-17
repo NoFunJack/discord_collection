@@ -1,7 +1,7 @@
 console.log('update Bulk data from scryfall')
 
-import request from 'request'
-import fs from 'fs'
+const request = require('request')
+const fs = require('fs')
 
 request('https://api.scryfall.com/bulk-data/oracle-cards', { json: true }, (err, res, body) => {
   if (err) { return console.log(err) }
