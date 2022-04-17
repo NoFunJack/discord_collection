@@ -1,9 +1,9 @@
 // Require the necessary discord.js classes
-import { MessageComponentInteraction,Client, Intents, MessageActionRow, Interaction, CacheType, MessageSelectMenu, SelectMenuInteraction, CommandInteraction, GuildMember } from 'discord.js'
+import { MessageComponentInteraction,Client, Intents, MessageActionRow, Interaction, CacheType, MessageSelectMenu, SelectMenuInteraction, CommandInteraction, GuildMember, MessageEmbed } from 'discord.js'
 import dotenv from 'dotenv'
 dotenv.config()
 import {initDb, Collection} from './modules/colmgr.js'
-import {getScryFallBuilder} from './modules/boosterBuilder'
+import {CardData, getScryFallBuilder} from './modules/boosterBuilder'
 
 const token = process.env.DISCORD_TOKEN
 const guildId = process.env.GUILD_ID
@@ -81,23 +81,67 @@ client.on('interactionCreate', async interaction => {
   async function openBooster (interaction: SelectMenuInteraction ,setId: string, addToCollection: boolean) {
     let amount = interaction.customId.split(' ')[1]
     let content = 'ERROR'
+    let newCards: CardData[] = []
     if (boosterBuilder.setExists(setId)) {
-      let newCards: string[] = []
       for(let i = 0;i<parseInt(amount);i++){
-        newCards = newCards.concat(boosterBuilder.getSetBooster(setId).map(c => c.name))
+        newCards = newCards.concat(boosterBuilder.getSetBooster(setId))
       }
-      content = 'Booster Content\n\n' +
-                        newCards.join('\n')
+      content = ''
       if (addToCollection) {
-        if (!await col.tryAddBoosterCards(interaction.user.id, newCards, parseInt(amount))) {
+        if (!await col.tryAddBoosterCards(interaction.user.id, newCards.map(c => c.name), parseInt(amount))) {
           content = 'sorry, no more bosterpoints ' + interaction.user.username
           console.log(content)
+          await interaction.update({
+            content: content,
+            components: []
+          })
+          return
         }
       }
     } else {
       content = 'set "' + setId + '" not found'
     }
-    await interaction.update({ content: content, components: [] })
+    await interaction.update({
+      content: content + buildList(newCards),
+      components: []
+      })
+  }
+
+  function buildList(data: CardData[]): string{
+
+    data = data
+        .sort((a,b) => Number((b.prices.eur || 0))- Number((a.prices.eur||0)))
+    
+    // plain list over discord limit
+    const plainList =data.map(d => d.name).join('\n')
+    if( plainList.length > 2000) {
+      return 'list to long for discord'
+    }
+
+    // include as many links as possible
+    let lastStr = plainList
+    let withLinkIdx = 0;
+    while(withLinkIdx <= data.length) {
+      let nextStr = '';
+      data.forEach((d, i) => {
+        if(i <= withLinkIdx){
+          nextStr += `[${d.name}](${d.scryfall_uri})`
+        } else {
+          nextStr += d.name
+        }
+        nextStr += '\n'
+      })
+
+      if(nextStr.length <= 2000){
+        lastStr = nextStr
+        withLinkIdx += 1
+      } else {
+        return lastStr
+      }
+    }
+
+    return lastStr;
+
   }
 })
 

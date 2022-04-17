@@ -7,6 +7,10 @@ class MockCard{
   public rarity: Rarity
   public set= MOCK_SET
   public type_line= "mock type"
+  public scryfall_uri = "mock://uri"
+  public prices = {
+    eur: null
+  }
 
   constructor(rarity: Rarity,typeLine?: string){
     this.rarity = rarity

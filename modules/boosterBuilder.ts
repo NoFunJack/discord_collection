@@ -43,6 +43,12 @@ export interface CardData {
   set: string;
   rarity: string;
   type_line: string;
+  scryfall_uri: string;
+  prices: PriceList;
+}
+
+export interface PriceList {
+  eur: string | null;
 }
 
 function rollSignature(sig: Signature, boosterType: string){
