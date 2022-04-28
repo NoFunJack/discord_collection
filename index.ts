@@ -165,6 +165,11 @@ async function buildSetSelector (interaction: CommandInteraction, id: string) {
         .setPlaceholder('Nothing selected')
         .addOptions([
           {
+            label: 'snc',
+            description: 'Streets of New Capenna',
+            value: 'snc'
+          },
+          {
             label: 'neo',
             description: 'Kamigawa: Neon Dynasty',
             value: 'neo'
@@ -178,7 +183,7 @@ async function buildSetSelector (interaction: CommandInteraction, id: string) {
             label: 'mid',
             description: 'Innistrad: Midnight Hunt',
             value: 'mid'
-          }
+          },
         ])
     )
 
